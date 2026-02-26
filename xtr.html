@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>专属幸运转盘 ❤️</title>
+<style>
+body {
+    text-align: center;
+    background: #ffeef3;
+    font-family: Arial;
+}
+
+h1 {
+    margin-top: 40px;
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 20px;
+    background: #ff6b81;
+    color: white;
+    border: none;
+    border-radius: 10px;
+}
+
+#result {
+    margin-top: 30px;
+    font-size: 22px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>给你的专属惊喜 🎁</h1>
+
+<button onclick="spin()">开始抽奖</button>
+
+<div id="result">点击按钮开始</div>
+
+<script>
+let prizes = [
+    "口红 💄",
+    "奶茶 🧋",
+    "香水 🌸",
+    "电影约会 🎬",
+    "小蛋糕 🍰"
+];
+
+let locked = false;
+
+function spin() {
+    if (locked) {
+        alert("已经抽过啦 😝");
+        return;
+    }
+
+    let resultDiv = document.getElementById("result");
+
+    let count = 0;
+    let interval = setInterval(function() {
+        resultDiv.innerHTML = prizes[Math.floor(Math.random()*prizes.length)];
+        count++;
+        if (count > 20) {
+            clearInterval(interval);
+            let final = prizes[Math.floor(Math.random()*prizes.length)];
+            resultDiv.innerHTML = "✨ 恭喜抽到：" + final + " ✨";
+            locked = true;
+        }
+    }, 100);
+}
+</script>
+
+</body>
+</html>
