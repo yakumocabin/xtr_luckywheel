@@ -2,73 +2,306 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>专属幸运转盘 ❤️</title>
+<title>专属幸运转盘</title>
 <style>
 body {
     text-align: center;
-    background: #ffeef3;
-    font-family: Arial;
+    background: linear-gradient(135deg, #ffeef3, #ffd6e0);
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 h1 {
-    margin-top: 40px;
+    margin-top: 20px;
+    color: #ff6b81;
+    font-size: 2.5rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 900px;
+    width: 100%;
+}
+
+.wheel-container {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    margin: 30px auto;
+}
+
+.wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    transition: transform 4s cubic-bezier(0.2, 0.8, 0.3, 1);
+    transform: rotate(0deg);
+}
+
+.wheel.spinning {
+    transition: transform 4s cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+
+.segment {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    transform-origin: 100% 100%;
+    left: 0;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.segment-text {
+    transform: rotate(45deg);
+    margin-left: 60px;
+    margin-bottom: 30px;
+    font-size: 16px;
+    text-align: center;
+    width: 80px;
+}
+
+.pointer {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 60px;
+    z-index: 10;
+}
+
+.pointer:before {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 30px solid #ff6b81;
+    top: 0;
+    left: 0;
 }
 
 button {
-    padding: 15px 30px;
-    font-size: 20px;
-    background: #ff6b81;
+    padding: 18px 40px;
+    font-size: 22px;
+    background: linear-gradient(to right, #ff6b81, #ff8e53);
     color: white;
     border: none;
-    border-radius: 10px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 30px;
+    box-shadow: 0 6px 20px rgba(255, 107, 129, 0.4);
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(255, 107, 129, 0.6);
+}
+
+button:active {
+    transform: translateY(1px);
+}
+
+button:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
+    box-shadow: none;
 }
 
 #result {
     margin-top: 30px;
-    font-size: 22px;
+    font-size: 28px;
+    color: #333;
+    min-height: 60px;
+    padding: 15px 30px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 90%;
+}
+
+.prize-list {
+    margin-top: 30px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    max-width: 500px;
+    width: 90%;
+}
+
+.prize-list h3 {
+    margin-top: 0;
+    color: #ff6b81;
+}
+
+.prize-list ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.prize-list li {
+    background: #ffeef3;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 16px;
+}
+
+.footer {
+    margin-top: 40px;
+    color: #888;
+    font-size: 14px;
 }
 </style>
 </head>
 
 <body>
 
-<h1>给你的专属惊喜 🎁</h1>
+<div class="container">
+    <h1>给你的专属惊喜 🎁</h1>
 
-<button onclick="spin()">开始抽奖</button>
+    <div class="wheel-container">
+        <div class="pointer"></div>
+        <div class="wheel" id="wheel">
+            <!-- 扇区将通过JavaScript动态生成 -->
+        </div>
+    </div>
 
-<div id="result">点击按钮开始</div>
+    <button id="spin-button" onclick="spin()">开始抽奖</button>
+
+    <div id="result">点击按钮开始旋转</div>
+
+    <div class="prize-list">
+        <h3>奖品列表</h3>
+        <ul id="prize-list-ul">
+            <!-- 通过JS填充 -->
+        </ul>
+    </div>
+
+    <div class="footer">
+        每次抽奖后轮盘将锁定，刷新页面可重置
+    </div>
+</div>
 
 <script>
 let prizes = [
-    "口红 💄",
-    "奶茶 🧋",
-    "香水 🌸",
-    "电影约会 🎬",
-    "小蛋糕 🍰"
+    "哈基米",
+    "我的刀盾",
+    "南北路多",
+    "外币巴伯",
+    "八嘎雅鹿"
 ];
 
 let locked = false;
+let spinning = false;
+let wheel = document.getElementById('wheel');
+let spinButton = document.getElementById('spin-button');
+let resultDiv = document.getElementById('result');
+let prizeListUl = document.getElementById('prize-list-ul');
 
+// 初始化轮盘扇区
+function initWheel() {
+    wheel.innerHTML = '';
+    let total = prizes.length;
+    let anglePer = 360 / total;
+    let colors = ['#FF6B81', '#FF8E53', '#FFD166', '#06D6A0', '#118AB2'];
+
+    for (let i = 0; i < total; i++) {
+        let segment = document.createElement('div');
+        segment.className = 'segment';
+        segment.style.transform = `rotate(${i * anglePer}deg)`;
+        segment.style.backgroundColor = colors[i % colors.length];
+
+        let text = document.createElement('div');
+        text.className = 'segment-text';
+        text.textContent = prizes[i];
+        segment.appendChild(text);
+
+        wheel.appendChild(segment);
+    }
+
+    // 填充奖品列表
+    prizeListUl.innerHTML = '';
+    prizes.forEach(prize => {
+        let li = document.createElement('li');
+        li.textContent = prize;
+        prizeListUl.appendChild(li);
+    });
+}
+
+// 旋转轮盘
 function spin() {
     if (locked) {
         alert("已经抽过啦 😝");
         return;
     }
+    if (spinning) return;
 
-    let resultDiv = document.getElementById("result");
+    spinning = true;
+    spinButton.disabled = true;
+    resultDiv.innerHTML = "旋转中...";
 
-    let count = 0;
-    let interval = setInterval(function() {
-        resultDiv.innerHTML = prizes[Math.floor(Math.random()*prizes.length)];
-        count++;
-        if (count > 20) {
-            clearInterval(interval);
-            let final = prizes[Math.floor(Math.random()*prizes.length)];
-            resultDiv.innerHTML = "✨ 恭喜抽到：" + final + " ✨";
-            locked = true;
-        }
-    }, 100);
+    // 随机旋转圈数（4-6圈）
+    let rounds = 4 + Math.floor(Math.random() * 4); // 2到5圈
+    let prizeIndex = Math.floor(Math.random() * prizes.length);
+    let anglePer = 360 / prizes.length;
+    // 扇区中心角度（从0度开始顺时针）
+    let sectorCenter = prizeIndex * anglePer + anglePer / 2;
+    // 最终角度：圈数*360 + 使扇区中心对准指针（0度）所需的角度
+    // 我们希望扇区中心旋转后位于0度，即 (sectorCenter + finalAngle) % 360 = 0
+    // 所以 finalAngle = (360 - sectorCenter) + rounds * 360
+    let finalAngle = rounds * 360 + (90 - sectorCenter);
+    console.log('prizeIndex:', prizeIndex, 'sectorCenter:', sectorCenter, 'finalAngle:', finalAngle, 'mod:', finalAngle % 360);
+
+    // 重置当前旋转
+    wheel.style.transform = 'rotate(0deg)';
+    // 强制重排
+    void wheel.offsetWidth;
+
+    // 应用旋转
+    wheel.style.transform = `rotate(${finalAngle}deg)`;
+    wheel.classList.add('spinning');
+
+    // 旋转结束后
+    setTimeout(() => {
+        spinning = false;
+        wheel.classList.remove('spinning');
+        let finalPrize = prizes[prizeIndex];
+        resultDiv.innerHTML = `✨ 恭喜抽到：<strong>${finalPrize}</strong> ✨`;
+        locked = true;
+        spinButton.disabled = false;
+        spinButton.textContent = "已抽奖";
+    }, 4000);
 }
+
+// 页面加载时初始化
+window.onload = initWheel;
 </script>
 
 </body>
