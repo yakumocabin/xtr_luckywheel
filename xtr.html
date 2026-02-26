@@ -268,7 +268,7 @@ function spin() {
     resultDiv.innerHTML = "旋转中...";
 
     // 随机旋转圈数（4-6圈）
-    let rounds = 4 + Math.floor(Math.random() * 4); // 2到5圈
+    let rounds = 4 + Math.floor(Math.random() * 4); // 
     let prizeIndex = Math.floor(Math.random() * prizes.length);
     let anglePer = 360 / prizes.length;
     // 扇区中心角度（从0度开始顺时针）
@@ -276,6 +276,7 @@ function spin() {
     // 最终角度：圈数*360 + 使扇区中心对准指针（0度）所需的角度
     // 我们希望扇区中心旋转后位于0度，即 (sectorCenter + finalAngle) % 360 = 0
     // 所以 finalAngle = (360 - sectorCenter) + rounds * 360
+    // 实测发现有90°的偏差，改成90-sectorcenter。。。。
     let finalAngle = rounds * 360 + (90 - sectorCenter);
     console.log('prizeIndex:', prizeIndex, 'sectorCenter:', sectorCenter, 'finalAngle:', finalAngle, 'mod:', finalAngle % 360);
 
